@@ -1,0 +1,10 @@
+{
+  "session_id": "20260118_163007",
+  "created": "2026-01-18T16:31:39.224266",
+  "total_samples": 308,
+  "class_counts": {
+    "circle": 308
+  },
+  "num_landmarks": 21,
+  "landmark_dims": 3
+}

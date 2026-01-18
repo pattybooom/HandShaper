@@ -1,0 +1,10 @@
+{
+  "session_id": "20260118_163218",
+  "created": "2026-01-18T16:33:56.130133",
+  "total_samples": 359,
+  "class_counts": {
+    "triangle": 359
+  },
+  "num_landmarks": 21,
+  "landmark_dims": 3
+}
