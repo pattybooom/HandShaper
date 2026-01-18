@@ -1,0 +1,453 @@
+/* ============================================================================
+   HandShaperr - Styles
+   Dark theme, clean UI, responsive layout
+   ============================================================================ */
+
+:root {
+    --bg-primary: #0a0a0f;
+    --bg-secondary: #12121a;
+    --bg-panel: #1a1a24;
+    --bg-hover: #252532;
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0b0;
+    --text-muted: #606070;
+    --accent-primary: #6366f1;
+    --accent-secondary: #818cf8;
+    --accent-glow: rgba(99, 102, 241, 0.3);
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --border-radius: 12px;
+    --border-radius-sm: 8px;
+    --transition: 0.2s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ============================================================================
+   Top Bar
+   ============================================================================ */
+
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    font-size: 28px;
+}
+
+.logo-text {
+    font-size: 20px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.status-group {
+    display: flex;
+    gap: 24px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-label {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.status-value {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.status-value.connected {
+    color: var(--success);
+}
+
+.status-value.connecting {
+    color: var(--warning);
+}
+
+.status-value.disconnected {
+    color: var(--error);
+}
+
+.prediction-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.prediction-main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.prediction-label {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.prediction-value {
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: capitalize;
+    color: var(--accent-secondary);
+}
+
+.prediction-prob {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.topk-display {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.topk-item {
+    display: flex;
+    gap: 4px;
+}
+
+.topk-label {
+    text-transform: capitalize;
+}
+
+.topk-prob {
+    color: var(--text-secondary);
+}
+
+/* ============================================================================
+   Main Content
+   ============================================================================ */
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    height: calc(100vh - 80px);
+}
+
+@media (max-width: 900px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+}
+
+.panel {
+    background: var(--bg-panel);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.panel-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.controls-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.control-select {
+    background: var(--bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-sm);
+    padding: 8px 12px;
+    color: var(--text-primary);
+    font-size: 13px;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.control-select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent-primary);
+}
+
+.slider-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.slider-label input[type="range"] {
+    width: 100px;
+    accent-color: var(--accent-primary);
+}
+
+#smoothingValue {
+    min-width: 20px;
+    text-align: center;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* ============================================================================
+   Video Container
+   ============================================================================ */
+
+.video-container {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    overflow: hidden;
+}
+
+#videoElement {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transform: scaleX(-1);
+    /* Mirror */
+}
+
+#overlayCanvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scaleX(-1);
+    pointer-events: none;
+    /* Size is set dynamically in JS to match video */
+}
+
+.no-hands-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    padding: 16px 24px;
+    border-radius: var(--border-radius);
+    font-size: 18px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: opacity var(--transition);
+}
+
+.no-hands-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ============================================================================
+   Three.js Container
+   ============================================================================ */
+
+.three-container {
+    flex: 1;
+    background: linear-gradient(180deg, #0d0d14 0%, #1a1a24 100%);
+    position: relative;
+}
+
+.three-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* ============================================================================
+   Start Overlay
+   ============================================================================ */
+
+.start-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 15, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+}
+
+.start-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.start-content {
+    text-align: center;
+    padding: 40px;
+}
+
+.start-content h1 {
+    font-size: 48px;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.start-content p {
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+    font-size: 18px;
+}
+
+.start-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    border: none;
+    padding: 16px 40px;
+    border-radius: 50px;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px var(--accent-glow);
+}
+
+.start-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px var(--accent-glow);
+}
+
+.start-button:active {
+    transform: translateY(0);
+}
+
+.button-icon {
+    font-size: 14px;
+}
+
+.start-note {
+    font-size: 13px !important;
+    color: var(--text-muted) !important;
+    margin-top: 24px !important;
+}
+
+/* ============================================================================
+   Error Toast
+   ============================================================================ */
+
+.error-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--error);
+    color: white;
+    padding: 12px 24px;
+    border-radius: var(--border-radius);
+    font-size: 14px;
+    z-index: 1001;
+    transition: opacity 0.3s, transform 0.3s;
+    max-width: 90%;
+}
+
+.error-toast.hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+    pointer-events: none;
+}
+
+/* ============================================================================
+   Utilities
+   ============================================================================ */
+
+.hidden {
+    display: none !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-hover);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}

@@ -10,22 +10,25 @@ HandShaperr classifies geometric shapes formed by hands/fingers (square, triangl
 data_collection.py   # Webcam → MediaPipe → normalized landmarks → CSV/JSONL/NPZ
 train.py             # Load dataset → train PyTorch MLP → save best.pt + metrics
 infer_realtime.py    # Webcam → MediaPipe → model → predicted shape + confidence
+ws_server.py         # WebSocket server for browser-based inference
 model.py             # HandShapeClassifier: MLP with LayerNorm, GELU, dropout
 dataset.py           # Multi-format loader (JSONL/CSV/NPZ), feature extraction, splits
 utils.py             # Normalization, standardization, prediction smoothing
 dataset/             # Session folders with samples.csv, samples.jsonl, samples.npz
 runs/                # Training runs with best.pt, label_map.json, confusion_matrix.png
+web/                 # Browser frontend: index.html, app.js, styles.css
 ```
 
 **Data Flow:**
 1. **Collection:** Camera → MediaPipe (21×3×2 landmarks) → normalize (wrist-origin, scale) → save
 2. **Training:** Load dataset → 128-dim features (landmarks + hand-present flags) → MLP → cross-entropy
-3. **Inference:** Camera → MediaPipe → same normalization → standardize (saved stats) → model → smoothed prediction
+3. **Inference (Python):** Camera → MediaPipe → same normalization → standardize → model → smoothed prediction
+4. **Inference (Web):** Browser MediaPipe JS → WebSocket → ws_server.py → model → prediction → Three.js 3D shape
 
 ## Dependencies
 
 ```bash
-pip install opencv-python mediapipe numpy torch scikit-learn matplotlib tqdm
+pip install opencv-python mediapipe numpy torch scikit-learn matplotlib tqdm websockets
 ```
 
 ## Commands
@@ -37,8 +40,12 @@ python data_collection.py --camera 0 --min_confidence 0.7 --two_hands True
 # Training
 python train.py --data_dir ./dataset --out_dir ./runs --epochs 50 --hidden 256
 
-# Real-time inference
-python infer_realtime.py --checkpoint ./runs/run_XXXXXX/best.pt --smoothing_window 5
+# Real-time inference (Python)
+python infer_realtime.py --checkpoint ./runs/run1/best.pt --smoothing_window 5
+
+# Web interface (run both commands)
+python ws_server.py --checkpoint ./runs/run1/best.pt --port 8000
+# Then open web/index.html via local server: python -m http.server 8080
 ```
 
 ## Data Format
@@ -54,6 +61,13 @@ python infer_realtime.py --checkpoint ./runs/run_XXXXXX/best.pt --smoothing_wind
 - `PredictionSmoother`: Moving average over N frames for stable predictions
 - Multi-format dataset loading: Auto-discovers JSONL, CSV, NPZ files recursively
 - `--split_by_session`: Prevents data leakage by splitting on session_id
+
+## Web Frontend
+
+- **MediaPipe Hands JS** runs in browser, sends landmarks via WebSocket
+- **ws_server.py** receives landmarks, runs PyTorch model, returns predictions
+- **Three.js** renders 3D shapes (square=wireframe box, triangle=cone, circle=torus, heart=extruded heart)
+- Client-side smoothing via majority vote over configurable window
 
 ## Model Architecture
 

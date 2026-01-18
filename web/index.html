@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HandShaperr - Real-Time Hand Shape Classification</title>
+
+    <!--
+    ============================================================================
+    HOW TO RUN
+    ============================================================================
+    1. Start the Python WebSocket backend:
+       cd /path/to/HandShaperr
+       python ws_server.py
+       (Backend must be running on ws://localhost:8000/ws)
+
+    2. Serve this folder with a local HTTP server:
+       cd web/
+       python -m http.server 8080
+
+    3. Open in browser: http://localhost:8080
+
+    4. Click "Start" button to begin camera capture and predictions.
+    ============================================================================
+    -->
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <!-- Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+</head>
+
+<body>
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <div class="logo">
+            <span class="logo-icon">✋</span>
+            <span class="logo-text">HandShaperr</span>
+        </div>
+
+        <div class="status-group">
+            <div class="status-item">
+                <span class="status-label">Status:</span>
+                <span id="connectionStatus" class="status-value disconnected">Disconnected</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">FPS:</span>
+                <span id="fpsDisplay" class="status-value">0</span>
+            </div>
+        </div>
+
+        <div class="prediction-group">
+            <div class="prediction-main">
+                <span class="prediction-label">Shape:</span>
+                <span id="predictionLabel" class="prediction-value">—</span>
+                <span id="predictionProb" class="prediction-prob"></span>
+            </div>
+            <div id="topkDisplay" class="topk-display"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Left Panel: Camera Feed -->
+        <section class="panel camera-panel">
+            <div class="panel-header">
+                <h2>Camera Feed</h2>
+                <div class="controls-row">
+                    <select id="cameraSelect" class="control-select">
+                        <option value="">Select Camera...</option>
+                    </select>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showLandmarks" checked>
+                        <span>Show Landmarks</span>
+                    </label>
+                </div>
+            </div>
+            <div class="video-container">
+                <video id="videoElement" playsinline></video>
+                <canvas id="overlayCanvas"></canvas>
+                <div id="noHandsOverlay" class="no-hands-overlay hidden">
+                    <span>👐 Show your hands</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Panel: 3D Visualization -->
+        <section class="panel viz-panel">
+            <div class="panel-header">
+                <h2>3D Shape</h2>
+                <div class="controls-row">
+                    <label class="slider-label">
+                        <span>Smoothing:</span>
+                        <input type="range" id="smoothingSlider" min="1" max="15" value="5">
+                        <span id="smoothingValue">5</span>
+                    </label>
+                </div>
+            </div>
+            <div id="threeContainer" class="three-container"></div>
+        </section>
+    </main>
+
+    <!-- Start Overlay -->
+    <div id="startOverlay" class="start-overlay">
+        <div class="start-content">
+            <h1>✋ HandShaperr</h1>
+            <p>Real-time hand shape classification using AI</p>
+            <button id="startButton" class="start-button">
+                <span class="button-icon">▶</span>
+                <span>Start Camera</span>
+            </button>
+            <p class="start-note">Requires camera access and WebSocket backend</p>
+        </div>
+    </div>
+
+    <!-- Error Toast -->
+    <div id="errorToast" class="error-toast hidden"></div>
+
+    <!-- App Script -->
+    <script src="app.js"></script>
+</body>
+
+</html>
