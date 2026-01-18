@@ -1,0 +1,15 @@
+{
+  "data_dir": "./dataset",
+  "out_dir": "./runs",
+  "epochs": 50,
+  "batch_size": 256,
+  "lr": 0.001,
+  "weight_decay": 0.01,
+  "patience": 8,
+  "hidden": 256,
+  "dropout": 0.2,
+  "split_by_session": false,
+  "seed": 42,
+  "device": "cpu",
+  "timestamp": "2026-01-18T16:44:04.357722"
+}

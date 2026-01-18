@@ -1,0 +1,11 @@
+# HandShaperr - Hand Shape Classification
+# Core dependencies
+torch>=2.0.0
+numpy>=1.24.0
+opencv-python>=4.8.0
+mediapipe>=0.10.0
+
+# Training utilities
+scikit-learn>=1.3.0
+matplotlib>=3.7.0
+tqdm>=4.65.0

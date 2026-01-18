@@ -7,42 +7,68 @@ HandShaperr classifies geometric shapes formed by hands/fingers (square, triangl
 ## Architecture
 
 ```
-data_collection.py   # Data collection: webcam → MediaPipe → normalized landmarks → CSV/JSONL/NPZ
-dataset/             # Output: session folders with samples.csv, samples.jsonl, samples.npz, metadata.json
+data_collection.py   # Webcam → MediaPipe → normalized landmarks → CSV/JSONL/NPZ
+train.py             # Load dataset → train PyTorch MLP → save best.pt + metrics
+infer_realtime.py    # Webcam → MediaPipe → model → predicted shape + confidence
+model.py             # HandShapeClassifier: MLP with LayerNorm, GELU, dropout
+dataset.py           # Multi-format loader (JSONL/CSV/NPZ), feature extraction, splits
+utils.py             # Normalization, standardization, prediction smoothing
+dataset/             # Session folders with samples.csv, samples.jsonl, samples.npz
+runs/                # Training runs with best.pt, label_map.json, confusion_matrix.png
 ```
 
-**Data Flow:** Camera → MediaPipe Hands (21 landmarks × 2 hands) → Normalize (wrist-origin, scale by hand size) → Save with label
+**Data Flow:**
+1. **Collection:** Camera → MediaPipe (21×3×2 landmarks) → normalize (wrist-origin, scale) → save
+2. **Training:** Load dataset → 128-dim features (landmarks + hand-present flags) → MLP → cross-entropy
+3. **Inference:** Camera → MediaPipe → same normalization → standardize (saved stats) → model → smoothed prediction
 
 ## Dependencies
 
 ```bash
-pip install opencv-python mediapipe numpy
+pip install opencv-python mediapipe numpy torch scikit-learn matplotlib tqdm
 ```
 
-## Running Data Collection
+## Commands
 
 ```bash
-python data_collection.py
-python data_collection.py --out_dir ./dataset --min_confidence 0.7 --two_hands False
-python data_collection.py --record_every_n 3 --max_per_label 1000
-```
+# Data collection
+python data_collection.py --camera 0 --min_confidence 0.7 --two_hands True
 
-**Controls:** `[L]` set label, `[R]` toggle recording, `[C]` capture one, `[N]` new session, `[Q]` quit
+# Training
+python train.py --data_dir ./dataset --out_dir ./runs --epochs 50 --hidden 256
+
+# Real-time inference
+python infer_realtime.py --checkpoint ./runs/run_XXXXXX/best.pt --smoothing_window 5
+```
 
 ## Data Format
 
-- **Landmarks:** 21 per hand, each (x, y, z), normalized to wrist origin and scaled by wrist→middle_mcp distance
-- **Outputs:** CSV (flat), JSONL (structured), NPZ (numpy arrays for ML)
-- **Per sample:** `sample_id`, `session_id`, `timestamp`, `label`, `hand1/hand2` data with `detected` mask
+- **Features:** 128 values = 21×3×2 landmarks + 2 hand-present flags
+- **Normalization:** Translate to wrist origin, scale by wrist→middle_mcp distance
+- **Standardization:** Z-score using training set mean/std (saved to feature_stats.json)
 
 ## Key Patterns
 
-- `normalize_landmarks()`: Translate to wrist origin, scale by hand size—ensures position/size invariance
-- `DatasetManager`: Incremental saves (crash-safe), session-based organization, metadata tracking
-- `HandShapeCollector`: Main loop with `process_frame()` → `capture_sample()` → UI overlay
+- `normalize_landmarks()`: Position/scale invariance (in utils.py and data_collection.py)
+- `extract_features()`: Consistent 128-dim vector for train and inference
+- `PredictionSmoother`: Moving average over N frames for stable predictions
+- Multi-format dataset loading: Auto-discovers JSONL, CSV, NPZ files recursively
+- `--split_by_session`: Prevents data leakage by splitting on session_id
 
-## Future Components
+## Model Architecture
 
-1. **Training script:** Load NPZ, train PyTorch/TensorFlow classifier on normalized landmarks
-2. **Inference script:** Real-time prediction from webcam
-3. **Visualization:** HTML page with webcam + predicted 3D shape rendering
+```python
+HandShapeClassifier(
+    input_dim=128,      # 21*3*2 landmarks + 2 mask flags
+    hidden_dim=256,     # Configurable via --hidden
+    num_classes=N,      # Auto-detected from labels
+    dropout=0.2,        # LayerNorm + GELU + Dropout
+)
+```
+
+## Training Outputs
+
+- `best.pt`: Model weights, optimizer state, label_map, feature_stats, config
+- `confusion_matrix.png`: Visual evaluation on test set
+- `history.json`: Per-epoch train/val loss and accuracy
+- `test_results.json`: Final metrics and classification report
